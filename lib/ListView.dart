@@ -4,17 +4,20 @@ import './EditListview.dart';
 import './model.dart';
 import './Constants.dart';
 
+// Fösta vyn
+
 class Listview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue[300],
+        backgroundColor: Colors.purple[100],
         title: Center(
-          child: Text('TIG169 TODO', textAlign: TextAlign.center),
+          child: Text('MY TODO LIST', textAlign: TextAlign.center),
         ),
 
-        // Drop down menu
+        // Drop down menu använder provider från model (filterChange).
+        // med constants och lista från klassen/filen Constants.
         actions: <Widget>[
           PopupMenuButton<String>(onSelected: (choice) {
             var state = Provider.of<MyState>(context, listen: false);
@@ -29,11 +32,14 @@ class Listview extends StatelessWidget {
           })
         ],
       ),
+
+// Retunerar en filtrerad lista (listFiltred) med state.
+//Consumer som lyssnar på vårt state
       body: Consumer<MyState>(
-        builder: (context, state, child) => TodoList(state.list),
+        builder: (context, state, child) => TodoList(state.listFiltered),
       ),
 
-      //FloatingAction Button.
+      // Min knapp som navigerar till EditListview.
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
@@ -50,58 +56,60 @@ class Listview extends StatelessWidget {
     );
   }
 
+  // Metoden för drop down menu
   void choiceAction(String choice) {
     if (choice == Constants.all) {
-      print('all');
       Filter.show = "all";
-      print(Filter.show);
     } else if (choice == Constants.done) {
-      print('done');
       Filter.show = "done";
-      print(Filter.show);
     } else if (choice == Constants.undone) {
-      print('undone');
-      Filter.show = "undone";
-      print(Filter.show);
+      Filter.show = "notDone";
     }
   }
 }
 
-//Klassen för listan
+//Klassen som skapar filtrerad lista.
 class TodoList extends StatelessWidget {
-  final List<TodoTask> list;
-  TodoList(this.list);
+  final List<TodoTask> listFiltered;
 
+  TodoList(this.listFiltered);
+
+  @override
   Widget build(BuildContext context) {
     return ListView(
-        children: list.map((task) => _todoTask(context, task)).toList());
+        children:
+            listFiltered.map((task) => todoWidget(context, task)).toList());
   }
-}
 
-//Checkboxen med provider från model.dart
-Widget _todoTask(context, task) {
-  return ListTile(
-    leading: Checkbox(
-      value: task.status,
-      onChanged: (bool newValue) {
-        var state = Provider.of<MyState>(context, listen: false);
-        state.toggleDone(task, newValue);
-      },
-    ),
-    title: Text(task.message,
-        style: TextStyle(
-            decoration: task.status == false
-                ? TextDecoration.none
-                : TextDecoration.lineThrough,
-            decorationThickness: 2.18)),
+// Widget för ikon raden med checkbox och tabort funktion.
+  Widget todoWidget(context, task) {
+    return Card(
+      child: CheckboxListTile(
+        controlAffinity: ListTileControlAffinity.leading,
+        title: Text(task.message,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                fontSize: 19.0,
+                decoration: task.status == false
+                    ? TextDecoration.none
+                    : TextDecoration.lineThrough,
+                decorationThickness: 2.18)),
+        value: task.status,
+        onChanged: (bool newValue) {
+          //Checkar i checkbox med provider.
+          var state = Provider.of<MyState>(context, listen: false);
+          state.toggleDone(task, newValue);
+        },
 
-    //Här raderas en task
-    trailing: IconButton(
-      icon: Icon(Icons.close),
-      onPressed: () {
-        var state = Provider.of<MyState>(context, listen: false);
-        state.removeTask(task);
-      },
-    ),
-  );
+        //Genom att man trycket på knappen raderas en task här med provider.
+        secondary: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            var state = Provider.of<MyState>(context, listen: false);
+            state.removeTask(task);
+          },
+        ),
+      ),
+    );
+  }
 }
