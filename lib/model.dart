@@ -1,43 +1,60 @@
 import 'package:flutter/material.dart';
-import 'Constants.dart';
+import './Constants.dart';
 
 class TodoTask {
-  UniqueKey id;
   String message;
   bool status = false;
 
-  TodoTask({this.id, this.message, this.status});
+  TodoTask({this.message, this.status});
 }
 
-//mappar appen med notifier
 class MyState extends ChangeNotifier {
   List<TodoTask> _list = [];
   List<TodoTask> get list => _list;
+  List<TodoTask> _filteredList = [];
+  List<TodoTask> get listFiltered => _filteredList;
+  
 
-  // Adderar en task/filrerar
   void addTodo(TodoTask todo) {
     _list.add(todo);
-    print("add");
-    print(_list.where((item) => item.status == false));
+    _filteredList = list.where((task) => task.message == task.message).toList();
     notifyListeners();
   }
 
-  //tar bort en task
   void removeTask(TodoTask task) {
     _list.remove(task);
+    _filteredList.remove(task);
     notifyListeners();
   }
 
-//ger task ett nytt värde för att checka i boxen
   void toggleDone(TodoTask task, bool newValue) {
     task.status = newValue;
     notifyListeners();
   }
 
-// filtrerar listan
   void filterChange(String choice) {
-    print("Debug filterChange");
     Filter.show = choice;
+    filteredList(choice);
     notifyListeners();
+  }
+
+  List<TodoTask> filteredList(String choice) {
+    _filteredList.clear();
+    if (choice == 'done') {
+      _filteredList = list.where((task) => task.status == true).toList();
+      return _filteredList;
+    } else if (choice == 'undone') {
+      print("notDONE");
+
+      _filteredList = list.where((task) => task.status == false).toList();
+
+      return _filteredList;
+    } else if (choice == 'all') {
+      print("ALL");
+      _filteredList =
+          list.where((task) => task.message == task.message).toList();
+      return _filteredList;
+    }
+    return _filteredList;
   }
 }
