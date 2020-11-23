@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import './model.dart';
 
-// Detta är andra vyn på appen
-
 class EditListview extends StatefulWidget {
   final TodoTask task;
 
@@ -26,6 +24,9 @@ class EditListviewState extends State<EditListview> {
 
     textEditingController = TextEditingController(text: task.message);
 
+
+// Lyssnare som kommer anropas när värdet i texteditingcontroller ändrar sig. 
+
     textEditingController.addListener(() {
       setState(() {
         message = textEditingController.text;
@@ -41,14 +42,14 @@ class EditListviewState extends State<EditListview> {
       },
       child: Text(
         '+ Add',
-        style: TextStyle(fontWeight: FontWeight.bold),
+        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20.0),
       ),
     );
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add to list'),
+        title: Text('ADD TO LIST'),
         centerTitle: true,
-        backgroundColor: Colors.blue[300],
+        backgroundColor: Colors.purple[100],
       ),
       body: Center(
         child: Column(
@@ -69,7 +70,11 @@ class EditListviewState extends State<EditListview> {
   Widget _textInputField() {
     return Container(
       margin: EdgeInsets.only(left: 16, right: 16),
+      width: 500.0,
       child: TextField(
+        style: TextStyle(
+          fontSize: 21.0,
+        ),
         controller: textEditingController,
         decoration: InputDecoration(hintText: 'I need to do...'),
       ),
