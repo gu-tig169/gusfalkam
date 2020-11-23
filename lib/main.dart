@@ -3,12 +3,13 @@ import 'ListView.dart';
 import 'model.dart';
 import 'package:provider/provider.dart';
 
-//Först vyn
+// Här körs koden med Notifyprovider som  alla widget i vår app
+// får tillgång till utan att vi behöver "skicka runt den" till alla
+//widgets i appen. 
+// home : Listview()
 
 void main() {
   var state = MyState();
-
-  //wrappar  applikationen i notifier
   runApp(
     ChangeNotifierProvider(
       create: (context) => state,
@@ -17,15 +18,14 @@ void main() {
   );
 }
 
-// Main metoden. Här körs appen. Listview Visas först enligt home property.
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'To do app',
       theme: ThemeData(
-        primarySwatch: Colors.green,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        primarySwatch: Colors.purple,
+        visualDensity: VisualDensity.comfortable,
       ),
       home: Listview(),
     );
