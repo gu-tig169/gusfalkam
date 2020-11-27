@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
+import './Constants.dart';
 import './EditListview.dart';
 import './model.dart';
-import './Constants.dart';
-
-// Fösta vyn
 
 class Listview extends StatelessWidget {
   @override
@@ -13,11 +12,8 @@ class Listview extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.purple[100],
         title: Center(
-          child: Text('MY TODO LIST', textAlign: TextAlign.center),
+          child: Text('TODO LIST', textAlign: TextAlign.center),
         ),
-
-        // Drop down menu använder provider från model (filterChange).
-        // med constants och lista från klassen/filen Constants.
         actions: <Widget>[
           PopupMenuButton<String>(onSelected: (choice) {
             var state = Provider.of<MyState>(context, listen: false);
@@ -32,14 +28,9 @@ class Listview extends StatelessWidget {
           })
         ],
       ),
-
-// Retunerar en filtrerad lista (listFiltred) med state.
-//Consumer som lyssnar på vårt state
       body: Consumer<MyState>(
-        builder: (context, state, child) => TodoList(state.listFiltered),
+        builder: (context, state, child) => TodoList(state.listFetched),
       ),
-
-      // Min knapp som navigerar till EditListview.
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () async {
@@ -56,7 +47,6 @@ class Listview extends StatelessWidget {
     );
   }
 
-  // Metoden för drop down menu
   void choiceAction(String choice) {
     if (choice == Constants.all) {
       Filter.show = "all";
@@ -68,40 +58,34 @@ class Listview extends StatelessWidget {
   }
 }
 
-//Klassen som skapar filtrerad lista.
 class TodoList extends StatelessWidget {
-  final List<TodoTask> listFiltered;
-
-  TodoList(this.listFiltered);
+  final List<TodoTask> _listFetched;
+  TodoList(this._listFetched);
 
   @override
   Widget build(BuildContext context) {
     return ListView(
         children:
-            listFiltered.map((task) => todoWidget(context, task)).toList());
+            _listFetched.map((task) => variableName(context, task)).toList());
   }
 
-// Widget för ikon raden med checkbox och tabort funktion.
-  Widget todoWidget(context, task) {
+  Widget variableName(context, task) {
     return Card(
       child: CheckboxListTile(
         controlAffinity: ListTileControlAffinity.leading,
         title: Text(task.message,
             textAlign: TextAlign.center,
             style: TextStyle(
-                fontSize: 19.0,
+                fontSize: 20,
                 decoration: task.status == false
                     ? TextDecoration.none
                     : TextDecoration.lineThrough,
                 decorationThickness: 2.18)),
         value: task.status,
         onChanged: (bool newValue) {
-          //Checkar i checkbox med provider.
           var state = Provider.of<MyState>(context, listen: false);
           state.toggleDone(task, newValue);
         },
-
-        //Genom att man trycket på knappen raderas en task här med provider.
         secondary: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
